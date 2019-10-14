@@ -1,0 +1,8 @@
+name: ttr
+conda_env: conda.yaml
+entry_points:
+   main:
+      parameters:
+         alpha: {type: float, default: 0.66}
+         lr_ratio: {type: float, default: 0.2}
+      command: "python server.py {alpha} {lr_ratio}"

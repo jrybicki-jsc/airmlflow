@@ -1,0 +1,8 @@
+name: ttr2
+channels:
+  - conda-forge
+dependencies:
+  - scikit-learn==0.21.3
+  - pysftp==0.2.9
+  - pip:
+    - mlflow

@@ -1,0 +1,35 @@
+export AIRFLOW_HOME=~/git/airml/airflow/
+airflow  scheduler 
+
+airflow webserver -p 8080
+
+
+twistd -n ftp -p 2024 -r ~/git/airml/twisted/
+
+(base?!)
+export MLFLOW_TRACKING_URI=http://localhost:5001/
+
+mlflow experiments create -n mysimpletrack_remote
+ mlflow run --experiment-name=mysimpletrack_remote . -P alpha=0.4431
+
+ twistd -n ftp  --auth memory:guest:geust -p 2040 -r /tmp/ftp/
+
+ docker run -p 2200:22 -d atmoz/sftp foo:pass:::upload
+
+sftp  -P 2200 foo@localhost
+
+mlflow server -p 5001 -w 1 --backend-store-uri sqlite:///max.db --default-artifact-root sftp://foo:pass@localhost:2200/upload/
+
+locales in .rc
+export LANG="en_US.UTF-8"
+export LANGUAGE="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
+
+
+works (suddenly)
+mlflow server -p 5001 -w 1 --backend-store-uri sqlite:///max.db --default-artifact-root sftp://foo:pass@localhost:2200/upload/
+docker run -p 2200:22 -d atmoz/sftp foo:pass:::upload
+
+export MLFLOW_TRACKING_URI=http://localhost:5001/
+mlflow run . 
+
