@@ -33,3 +33,8 @@ docker run -p 2200:22 -d atmoz/sftp foo:pass:::upload
 export MLFLOW_TRACKING_URI=http://localhost:5001/
 mlflow run . 
 
+OpenAQ:
+docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=mysecretpassword --name mypos postgres:9.6
+docker exec mypos /bin/bash -c 'createdb -U postgres jjdb'
+-> add connection openaq-data to airflow
+
