@@ -1,29 +1,50 @@
 export AIRFLOW_HOME=~/git/airml/airflow/
 airflow  scheduler 
-
 airflow webserver -p 8080
 
 
-twistd -n ftp -p 2024 -r ~/git/airml/twisted/
 
-(base?!)
-export MLFLOW_TRACKING_URI=http://localhost:5001/
-
-mlflow experiments create -n mysimpletrack_remote
- mlflow run --experiment-name=mysimpletrack_remote . -P alpha=0.4431
-
- twistd -n ftp  --auth memory:guest:geust -p 2040 -r /tmp/ftp/
-
- docker run -p 2200:22 -d atmoz/sftp foo:pass:::upload
+docker run -p 2200:22 -d atmoz/sftp foo:pass:::upload
 
 sftp  -P 2200 foo@localhost
+--> check ~/.ssh/known_hosts
+--> the host format should be:
+localhost ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIN288MQm6TO1qjiOlBFlZ0lSEIqSjlUJLCk1Iaj5nj3
+(no port no [])
 
-mlflow server -p 5001 -w 1 --backend-store-uri sqlite:///max.db --default-artifact-root sftp://foo:pass@localhost:2200/upload/
+pip install mlflow==1.3.0 
+mlflow server -p 5001 -h 0.0.0.0 -w 1 --backend-store-uri sqlite:///max.db --default-artifact-root sftp://foo:pass@localhost:2200/upload/
+
+
+export MLFLOW_TRACKING_URI=http://localhost:5001/
+mlflow experiments create -n mysimpletrack_remote
+mlflow run --experiment-name=mysimpletrack_remote . -P alpha=0.4431
+
 
 locales in .rc
 export LANG="en_US.UTF-8"
 export LANGUAGE="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
+
+
+OpenAQ:
+docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=mysecretpassword --name mypos postgres:9.6
+docker exec mypos /bin/bash -c 'createdb -U postgres jjdb'
+-> add connection openaq-data to airflow
+-> add variable: 'prefix_pattern': 'realtime/$date/'  (realtime-gzipped/$date/)
+-> add variable: target_dir (?)
+
+
+Model deployment
+mlflow runs list --experiment-id 0
+mlflow models serve -m runs:/98ec38b6b84641e785847960def0034f/model -p 8081
+
+rsp = requests.post(url='http://localhost:8081/invocations, 
+                    headers = {"Content-Type":"application/json"}, 
+                    data=df.to_json(orient='split'))
+
+
+source /home/ubuntu/miniconda2/bin/../etc/profile.d/conda.sh
 
 
 works (suddenly)
@@ -32,9 +53,3 @@ docker run -p 2200:22 -d atmoz/sftp foo:pass:::upload
 
 export MLFLOW_TRACKING_URI=http://localhost:5001/
 mlflow run . 
-
-OpenAQ:
-docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=mysecretpassword --name mypos postgres:9.6
-docker exec mypos /bin/bash -c 'createdb -U postgres jjdb'
--> add connection openaq-data to airflow
-
