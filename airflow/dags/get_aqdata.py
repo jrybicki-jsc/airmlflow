@@ -1,11 +1,11 @@
 import logging
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from airflow import DAG, utils
 from airflow.operators.python_operator import PythonOperator
 from tools import (FETCHES_BUCKET,
                    get_jsons_from_object, get_object_list,
-                   read_object_list, serialize_object, split_record)
+                   read_object_list, serialize_object, split_record, filter_objects)
 
 from localutils import add_to_db, generate_fname, print_db_stats, setup_daos
 
@@ -48,10 +48,10 @@ def add_to_database(**kwargs):
     with open(objs, 'r') as f:
         wl = read_object_list(f)
 
-    # execution_date = kwargs['execution_date'].strftime('%Y-%m-%dT%H-%M')
-    # previous_run = kwargs['prev_execution_date'].strftime('%Y-%m-%dT%H-%M')
-    # filtered = list(filter_objects(all_objects=wl, start_date=previous_run, end_date=execution_date))
-    filtered = list(wl)
+    execution_date = kwargs['execution_date'].strftime('%Y-%m-%dT%H-%M')
+    previous_run = kwargs['prev_execution_date'].strftime('%Y-%m-%dT%H-%M')
+    filtered = list(filter_objects(all_objects=wl, start_date=previous_run, end_date=execution_date))
+    #filtered = list(wl)
 
     station_dao, series_dao, mes_dao = setup_daos()
     records = 0
@@ -69,13 +69,14 @@ def add_to_database(**kwargs):
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': utils.dates.days_ago(2),
+    'start_date': datetime(2018, 1, 2),
+    'end_date': datetime(2018, 1, 3),
     'provide_context': True
 }
 
 op_kwargs = {
     'base_dir': '/tmp/data/',
-    'prefix': 'test-realtime/',
+    'prefix': 'realtime/',
 }
 
 dag = DAG('get-aqdata', default_args=default_args,
