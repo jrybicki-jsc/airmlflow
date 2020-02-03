@@ -3,3 +3,9 @@ data/*
 *.pyc
 .idea/*
 .vscode/*
+airflow/.vscode/*
+airflow/airflow-webserver.log
+airflow/airflow.db
+mlflow/max.db
+mlflow/mlruns/
+mlflow/tmp/
